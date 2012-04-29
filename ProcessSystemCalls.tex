@@ -1,0 +1,95 @@
+\chapter{Process System Calls}
+\label{chp:process_system_calls}
+\index{Process System Calls}
+
+\section{Process System Calls}
+\label{procsyscall}
+\index{Process System Calls}
+\textit{Process system calls} are used by a process when it has to duplicate itself, execute a new process in its place or when it has to terminate itself. There are three process system calls. An interrupt is associated with each system call. All the necessary arguments for a system call are available in the user stack with the system call number as the last argument.\\
+
+\noindent Interrupt specifications for different \textit{Process system calls} are as follows:
+
+\subsection{INT 3}
+The process system calls \textit{Fork} and \textit{Exec} invoke INT 3. INT 3 handles these system calls as follows.
+
+\begin{enumerate}
+	\item  \textbf{Fork :}  This system call is used to create a new process having the same code area, data area and list of open files as that of the process which invoked this system call.
+	
+	The new process that is created is known as the \emph{child} process, and the process which invoked this system call is known as its \emph{parent}.
+	
+	The register values in the PCB of the child process are initialized with the current register contents.\\
+	Syntax : \texttt{int Fork()} \\
+	Syscall no : \counter{syscall}
+	\index{Process System Calls!Fork}
+	\begin{itemize}
+		\item A vacant entry is searched for in the \emph{Ready list}.
+		\item If no entry is found, in the case when there are already 12 processes that are active, an appropriate error code is returned.
+		\item The index of this vacant ready list entry is the PID for the child process that is created.
+		\item The PID entry in the PCB of the child process is updated with this new PID.
+		\item All the registers (except PID) and the local file table of the parent process is replicated in the PCB of the child process.
+		\item The code pages, the data page and the stack page of the parent process is replicated for this child process.
+		\item The control is returned back to the parent process.
+		\item The return value of this system call is the PID of the child process.
+	\end{itemize}
+
+	\item  \textbf{Exec :}  This system call is used to load the program, whose name is specified in the argument, in the memory space of the current process and start its execution .\\
+	Syntax : \texttt{int Exec(filename)} \\
+	Syscall no : \counter{syscall}
+	\index{Process System Calls!Exec}
+	\begin{itemize}
+		\item The entire process area of the currently executing process is replaced by that of the program specified in the argument (\texttt{filename}). 
+		\item If the file specified by \texttt{filename} is not an executable \footnote{Executables in {\ESIM} must end with an extension \texttt{.sim}} then, an appropriate error code is returned.
+		\item The memory copy of the FAT \index{File Allocation Table!Memory copy} is searched to get the location of the basic block of the file specified by \texttt{filename}, which is then loaded into the scratchpad.
+		\item This is then used to get the location in the disk of the blocks of the file to be loaded.
+		\item The 2 code blocks and 1 data block of the file are loaded from the disk into the corresponding locations in the memory of the code blocks and data block of the current process.
+		\item The PCB of the current process is modified to hold the values for that of the new process. The PID and page table, however, remains unchanged.\footnote{This is because the mappings remain the same as the code blocks and data block of the specified executable are loaded into the same locations as of the current process. Since, no new process table entry is created, the PID also remains the same.}
+		\item The return value of this system call is 1 in case of a failure. Nothing is returned in case of a success.
+	\end{itemize}
+\end{enumerate}
+
+\subsection{INT 4}
+The process system call \textit{Exit} invokes INT 4. INT 4 handles this system call as follows.
+\begin{enumerate}
+	\item  \textbf{Exit :}  This system call is used to terminate the execution of the process which invoked it and removes it from the memory . It loads the next available process.\\
+	Syntax :  \texttt{Exit()}  \\
+	Syscall no : \counter{syscall}
+	\index{Process System Calls!Exit}
+	\begin{itemize}
+		\item The entire address space of the currently executing process is set free by setting a value 0 in the memory free list corresponding to the pages occupied by that process.
+		
+		\item The local file table is traversed and the global file table entry is removed.
+		
+		\item The ready list entry corresponding to this process is set to zero thereby releasing all the data structures used by the process (fig~\ref{fig:ds with process}).
+		
+		\item The ready list is then searched for the next available process. The INIT process is excluded in this search.\footnote{This can be accomplished by setting the PID of INIT process as 0 and searching only the entries from 1--11 in the ready list.} If one such process is found, the PID is updated with the index of this entry in the ready list. If no such process is found, then the PID is set to the index of the INIT process in the ready list.
+		
+		\item All the registers of the machine are initialised with their corresponding values obtained from the PCB of the process specified by the new PID.
+		
+		\item The process switches from \textit{Kernel mode} to \textit{User mode}.
+	\end{itemize}
+\end{enumerate}
+
+\section{INIT Process}
+The INIT process is the first user process loaded by the OS on the OS startup. INIT was previously defined in chapter~\ref{chp:osstartup} as a normal user program. Since multiprogramming functionalities have been added to the OS, INIT must be modified. The modified specification of INIT process is as follows:
+\begin{itemize}
+	\item  It provides an interface for the users to run other user programs.
+	\item The user enters the name of a valid executable file (which should be made available in the disk) in the shell. If the specified file is not found, an appropriate error code is returned.
+	\item If the specified executable file is found, the INIT process forks and does exec on the that file.
+	\item Entering the keyword HALT instead of the name of an executable file invokes the Shutdown system call.
+\end{itemize}
+
+All the user processes other than INIT are added to entries 1-11 of the ready queue keeping the 0th entry (corresponding to INIT) untouched. INIT loads the first process and thereafter all context switches occur among the other processes in the ready queue. INIT is switched back only when the ready queue (entries 1-11) is free so that the user can load another executable file via the shell. 
+
+%\appendix TODO !!
+%\section{Simple Integer Machine (SIM) architecture}
+% \chapter{System Programmer's manual}
+% The following diagram illustrates the interaction among various modules that have been written in the code. 
+% 
+%  \begin{figure}[htp!]
+% 	  \centering
+% % 	  \includegraphics[scale=0.55]{pics/spm}
+% 	  \caption{Interaction among various modules in the implementation}
+% 	  \label{fig:spm}
+% 	  \end{figure}
+% 
+% Each module performs a specific function which has been well documented in the code. All variables and data structures that are used are suitably named and proper constants have been defined for anything that has a fixed value like location in memory of the various data structures and other machine constants. 

@@ -1,0 +1,214 @@
+\chapter{Process}
+\label{chp:process}
+\index{Process}
+
+\section{Introduction}
+\begin{defn}
+	\textbf{Process :} Any program written by the user is run as a process by the kernel. 
+\end{defn}
+\begin{itemize}
+	\item The {\ESIM} architecture supports a maximum of 12 processes to be run at a time.
+	\item Each process occupies 4 pages of the memory.
+\end{itemize}
+
+\section{Process Structure}
+\index{Process!Structure}
+A process in the memory has the following structure.
+\begin{itemize}
+	\item \textbf{Code Area :} \index{Process!Code Area} These are pages of the memory that contain the actual code to be run on the machine. It occupies 2 pages of the memory. 
+	\item \textbf{Data Area :} \index{Process!Data Area} This section consists of string data that is used in the code which cannot be stored in a register. It occupies 1 page of the memory.
+	\item \textbf{Stack :} This is the user stack used in program execution. It is used to pass arguments during function calls, storing activation record of a function etc.  It occupies 1 page of the memory and grows in the direction of increasing word address.
+\end{itemize}
+
+Figure~\ref{fig:process structure} shows the process structure. \\
+
+\begin{figure}[htp!] 
+	\centering
+	\begin{tabular}{|c|c} 
+		\textbf{Contents}     & \textbf{Pg no:} \\ \cline{1-1}
+		\multirow{2}{*}{Code} & $0$ \\
+				      & $1$ \\ \cline{1-1}
+		Data & 2 \\ \cline{1-1}
+		\noalign{\smash{\llap{\lower2pt\hbox{\tt BP$\longrightarrow$}}}}
+		&  \\
+		&  \\
+		\noalign{\smash{\llap{\raise2pt\hbox{\tt $\bigg \downarrow$ }}}}
+		Stack & 3 \\ \cline{1-1}
+		\noalign{\smash{\llap{\lower2pt\hbox{\tt SP$\longrightarrow$}}}}
+	\end{tabular}
+	\caption{Process Structure in memory. Arrow shows the direction of stack growth}
+	\label{fig:process structure}
+\end{figure}
+
+\section{Registers Associated with a Process}
+\label{register details}
+\begin{itemize}
+	\item Every process is allotted a unique integer identifier in the range 0 to 11, known as the PID (Process Identifier) which is stored in the PID register. This register can be used as an operand in any instruction only when executing in the kernel mode. (Refer section~\ref{sec:modes} to know about the modes of operation)
+	\index{Registers!PID}
+	\item The word address of the currently executing instruction is stored in the IP (Instruction Pointer) register. This register can be used as an operand in any instruction only when executing in the kernel mode.
+	\index{Registers!IP}
+	\item The base address of the user stack is stored in the BP (Base Pointer) register. \index{Registers!BP}
+	\item The address of the stack top is stored in the SP (Stack Pointer) register. \index{Registers!SP}
+\end{itemize}
+Each process has its own set of values for the various registers.
+
+\section{Data Structures Associated with a Process}
+\index{Process Data Structures}
+
+The following are the various data structures associated with a process. They are explained in the following subsections.
+
+\subsection{Ready List}
+\index{Process!Ready List}
+\label{lbl:rdylst}
+The \textit{ready list :} is the data structure that maintains a circular list of all the active processes. Each entry of the ready list contains a value of either 1 or 0 indicating whether the corresponding process in the memory is present in the list or not.
+
+\subsection{Process Control Block (PCB)}
+\label{sec:pcb}
+\index{Process Data Structures!Process Control Block}
+It contains data pertaining to the current state of the process. Refer figure~\ref{fig:PCB}.\\
+
+\newcommand{\pcb}[1]{
+	\begin{figure}[htp!]
+		\centering
+		\begin{tabular}{|c|c|c|c|c|c|}
+			\hline
+			0 & 1 & 2 & 3 & 4--11 & 12--15 \\
+			\hline
+			PID & BP & SP & IP & R0 -- R7 & Local File Table \\
+			\hline
+		\end{tabular}
+		\caption{Structure of Process Control Block}
+		\label{#1}
+	\end{figure}
+	}
+
+\pcb{fig:PCB}
+
+Note that the size of each PCB (Process Control Block) is 16 words. 
+
+\subsection{The Page Table}
+\label{lbl:pgtbl}
+\index{Process!Page Table}
+The \emph{page table} stores the exact location in the memory of the data related to a process.
+\begin{itemize}
+	\item Each process has 4 entries in the page table.
+	\begin{itemize}
+		\item The zeroth entry corresponds to the first page of code area.
+		\item The first entry corresponds to the second page of code area.
+		\item The third entry corresponds to the data area.
+		\item The fourth entry corresponds to the stack.
+	\end{itemize}
+	\item Each entry contains the page number where the data specified by the logical address resides in the memory. Refer figure~\ref{fig:paging}.
+\end{itemize}
+
+\section{Storage Details of the Data Structures}
+	The data structures used by the processes are stored statically in the memory. Their storage details are as follows.\\
+
+\begin{figure}[htp!]
+	\centering
+	\subfigure[Main Memory]{
+	\renewcommand{\arraystretch}{1.2}
+	\scalebox{0.85}{
+	\begin{tabular}{r|c|} \small
+		\textbf{Pg no.} & \textbf{Contents} \\ \cline{2-2}
+		0   &  \\ \cline{2-2}
+		1   &  \\ \cmidrule{2-2}
+		\multirow{4}{*}{2}
+			& \cellcolor{gray!70} Static Page Tables   \\ \cline{2-2}
+			& Memory Free List     \\ \cline{2-2}
+			& Global File Table    \\ \cmidrule{2-2}
+			& \cellcolor{cyan!70} Ready List  \\ \cline{2-2}
+		3   & \cellcolor{orange!70} Process Table  \\ \cline{2-2}
+		    & \vdots \\ \cline{2-2}
+		7  &  \\ \cline{2-2}
+		\multirow{3}{*}{8 -- 55}
+			&  \vdots  \\
+			&  User Programs \\
+			& \vdots  \\ \cline{2-2}
+			&  \\ \cline{2-2}
+		56 -- 63 & INT 0 -- 7  \\ \cline{2-2}
+		& \vdots   \\ \cline{2-2}
+	\end{tabular}}} \\
+
+	\subfigure[Structure of Page Table]{
+	\renewcommand{\arraystretch}{1.2}
+	\scalebox{0.7}{
+	\begin{tabular}{|>{\columncolor[gray]{.8}}c|m{1cm}} \small
+		Word Address & Process  \\
+		0 & \multirow{4}{*}{$0$}  \\
+		1 &  \\
+		2 &  \\
+		3 &  \\ \cmidrule{1-1}
+		\vdots &  \\ \cmidrule{1-1}
+		$4i$ & \multirow{4}{*}{$i$}  \\ \cline{1-1}
+		$4i+1$ &  \\
+		$4i+2$ &  \\
+		$4i+3$ &  \\ \cmidrule{1-1}
+		\vdots &  \\ \cmidrule{1-1}
+		$44$ & \multirow{4}{*}{$11$}  \\
+		$45$ &  \\
+		$46$ &  \\
+		$47$ &  \\
+	\end{tabular}}} \qquad \qquad
+	\subfigure[Structure of Ready List]{
+	\renewcommand{\arraystretch}{1.2}
+	\scalebox{0.7}{
+	\begin{tabular}{|>{\columncolor{cyan}}c|m{1cm}} \small
+		Word Address & Process  \\
+		0 & $0$ \\
+		1 & $1$ \\
+		2 & $2$ \\
+		\vdots &  \\
+		10 & $10$ \\
+		11 & $11$ \\
+	\end{tabular}}} \qquad \qquad
+	\subfigure[Structure of Process Table]{
+	\renewcommand{\arraystretch}{1.2}
+	\scalebox{0.7}{
+	\begin{tabular}{|>{\columncolor[rgb]{1,0.5,.1}}c|m{1cm}} \small
+		Word Address & Process  \\
+		0 & \multirow{4}{*}{$0$}  \\
+		1 &  \\
+		\vdots &  \\
+		15 &  \\ \cmidrule{1-1}
+		\vdots &  \\ \cmidrule{1-1}
+		$16i$ & \multirow{4}{*}{$i$}  \\
+		$16i+1$ &  \\
+		$16i+2$ &  \\
+		\vdots & \\
+		$16i+15$ &  \\ \cmidrule{1-1}
+		\vdots &  \\ \cmidrule{1-1}
+		$176$ & \multirow{4}{*}{$11$}  \\
+		$177$ &  \\
+		\vdots &  \\
+		$191$ &  \\
+	\end{tabular}}} \\
+	\caption{Data Structures associated with a process}
+	\label{fig:ds with process}
+\end{figure}
+
+\subsection{Ready List}
+\begin{itemize}
+	\item The ready list is located in words 209--220 of page 2 of the memory (refer fig~\ref{fig:main memory}).
+	\item The size of each ready list entry is one word.
+	\item There are a total of 12 processes, thus accounting for the 12 words (12 $\times$ 1 word).
+	\item All active processes have an entry 1 in the ready list corresponding to the location indexed by their respective PIDs.
+\end{itemize}
+
+\subsection{Page Tables}
+\begin{itemize}
+	\item The page tables of the 12 processes are stored in the first 48 words of page 2 of the memory. Refer figure~\ref{fig:main memory}.
+	\item The size of each page table is 4 words ( 4(= no. of entries) $\times$ 1(= size of an entry)= 4 words).
+	\item There are a total of 12 processes, thus accounting for the 48 words( 12 $\times$ 4 words).
+	\item The page tables are indexed by multiplying the PID of a process by the size of a page table to get the starting word address of the page table of that process.  The indexing mechanism is illustrated in figure~\ref{fig:ds with process}.
+\end{itemize}
+
+\subsection{Process Table}
+\index{Process!Process Table}
+\label{lbl:proctbl}
+\begin{itemize}
+	\item The page 3 of the memory contains the process table. Refer figure~\ref{fig:main memory}.
+	\item The process table contains the PCB of each of the 12 processes (Each entry occupies 16 words).
+	\item There are a total of 12 processes, thus accounting for the 192 words (12 $\times$ 16 words).
+	\item The process table is indexed by multiplying the PID of a process by the size of a PCB to get the starting word address of the PCB of that process. The indexing mechanism is illustrated in figure~\ref{fig:ds with process}.
+\end{itemize}

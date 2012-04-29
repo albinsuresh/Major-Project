@@ -1,0 +1,36 @@
+\chapter{Introduction}
+\label{chp:osintro}
+The OS provides an interface to the user to interact with the hardware. Users write programs that make use of various resources like disk, memory, processor etc. These programs are run as processes on the machine.
+
+The system programmers use the language SP-SIL for writing the Operating System. User programs to test the various functionalities of the Operating System can be written in AP-SIL. Refer the documents ~\cite{spsil} and ~\cite{apsil} for the complete documentation of these tools.
+
+\section{Operating System Functionality}
+There are various functionalities associated with the operating system which are essential for the user programs to run and make use of the system resources. The functionalities and their details are explained below.
+
+\subsection{Process Management}
+Any program that the user wishes to execute is loaded into the memory (A program in memory is known as a process). For creating a new process,
+
+\begin{itemize}
+	\item The ready list is searched for an entry with value 0. The corresponding entry found is set to 1 and the index of this entry is returned as the PID of the process. If no free entry is found, an appropriate error code is returned.
+	\item The page table for the process is initialized as follows :
+	\begin{enumerate}
+		\item The $1^{st}$ entry of the page table contains the page number of the memory where the first code block of the program has been loaded.
+		\item The $2^{nd}$ entry of the page table contains the page number of the memory where the second code block of the program has been loaded.
+		\item The $3^{rd}$ entry of the page table contains the page number of the memory where the data block of the program has been loaded.
+		\item The $4^{th}$ entry of the page table contains the page number of the memory reserved for the stack.
+	\end{enumerate}
+	\item Set the values of BP, SP and IP in the PCB as 768, 768 and 0 respectively.
+	\item Once a process finishes its execution, the entry corresponding to it in the ready list is set to 0.
+\end{itemize}
+
+\subsection{Multiprogramming}
+The operating system allows multiple processes to be run on the machine and manages the system resources among these processes. 
+This process of simultaneous execution of multiple processes is known as \emph{multiprogramming}. Refer chapter~\ref{chp:multiprog} to know more about multiprogramming.
+
+\subsection{System Calls}
+A process needs resources like disk, memory etc while executing. The OS caters to these needs of the process by providing an interface  known as the \emph{system call interface}. Refer chapter~\ref{chp:file_system_calls} and chapter~\ref{chp:process_system_calls} to know more about system calls.
+
+%\subsection{Exception Handling}
+%Whenever the machine deviates from its normal execution, an exception occurs. To handle this exception, machine generates the 
+%interrupt corresponding to exception handling (\texttt{INT 7}). The exception handler restores the machine back to its normal state
+%and continues the execution of the other processes. Refer chapter~\ref{chp:exception} to know more about exception handling.

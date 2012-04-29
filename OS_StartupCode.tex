@@ -1,0 +1,28 @@
+\chapter{OS Startup}
+\label{chp:osstartup}
+
+\section{OS Startup Code Specification}
+\index{OS Startup Code}
+\label{lbl:oscode}
+When the machine boots up, the \textit{Bootloader} code loads the \textit{OS startup code} into the main memory. The OS startup code (instructions in page 1, see fig~\ref{fig:main memory}) starts execution in the \textit{Kernel mode}. It performs the following functions.
+\begin{itemize}
+	\item It loads the Interrupt Service Routines from the blocks 1--8 of the hard disk into pages 56--63 of the memory.
+	\item It loads the FAT from blocks 11 and 12 of the hard disk into pages 4 and 5 of the memory.
+	\item It loads the disk free list from Blocks 9 and 10 into pages 6 and 7 of the memory.
+	\item It generates the memory free list and stores it in words 48--111 of page 2 of the memory.
+	\item It loads the INIT process from the hard disk into the memory by performing the following steps:
+	\begin{itemize}
+		\item Load the INIT process from blocks 14--16 of the hard disk to pages 8--10 of memory. Page 11 is allocated as the user stack.
+		\item Update the memory free list.
+		\item Update the ready list and PID register.
+		\item Set the required page table entries.
+		\item Set the values of SP, BP and IP with values 768, 768 and 0 respectively.
+	\end{itemize}
+	\item Switch from \textit{Kernel mode} to \textit{User mode}.\footnote{This can be achieved by calling IRET.}
+\end{itemize}
+
+Note: All addresses are absolute addresses in Kernel mode. 
+\section{INIT Process}
+\index{INIT Process}
+\label{lbl:INITprocess}
+The Operating System currently supports execution of only a single user program - the INIT process. Testing of the OS startup code can be done by loading the required user program as the INIT process. Modification to INIT will be done later.

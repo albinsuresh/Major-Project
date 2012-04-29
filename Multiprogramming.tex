@@ -1,0 +1,15 @@
+\chapter{Multiprogramming}
+\label{chp:multiprog}
+To support multiprogramming in the system, the kernel makes use of the \emph{scheduler} which is present in the interrupt service routine INT 0\footnote{Unlike other interrupts, INT 0 is called by the machine and not by the user program.}.
+
+\section{Scheduler}
+\label{chp:scheduler}
+\index{Scheduler}
+Whenever a timer interrupt occurs, the kernel temporarily halts the execution of the currently executing process and invokes INT 0.
+Refer book~\cite{Crowley} for more details.
+Following are functionalities of the scheduler:
+\begin{itemize}
+	\item If a process is currently running, the scheduler saves the values of all the registers into the corresponding fields in the PCB of that process.
+	\item The scheduler scans the ready list starting from the current PID and checks for the presence of a process other than the INIT process.\footnote{This can be accomplished by setting the PID of INIT process as 0 and searching only the entries from 1--11 in the ready list.} If one such process is found, the PID is updated with the index of this entry in the ready list. If no such process is found, then the PID is set to the index of the INIT process in the ready list. Then all the registers of the machine are initialised with their corresponding values obtained from the PCB of the process specified by this PID.
+	\item The process switches from \textit{Kernel mode} to \textit{User mode}.
+\end{itemize}

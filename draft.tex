@@ -1,0 +1,69 @@
+\documentclass[a4paper,11pt]{report}
+\usepackage{seminarreport}
+
+\newtheorem{example}{Example}[section]
+\newtheorem{defn}{Def}
+\newcommand{\ESIM}{\textsc{E}\small{\texttt{SIM}}~}
+\newcommand\T{\rule{0pt}{3.1ex}}		% To add space b/w words and top \hline
+\renewcommand{\figurename}{Fig.}
+
+\newcommand\counter[1]{\arabic{#1} \stepcounter{#1}}
+\newcounter{syscall}
+%%%%% Copy-paste from hw5.tex
+\topmargin 0pt
+\advance \topmargin by -\headheight
+\advance \topmargin by -\headsep
+\textheight 8.9in
+\oddsidemargin 0pt \evensidemargin \oddsidemargin \marginparwidth 0.5in
+\textwidth 6.5in
+%%%%%
+
+\makeindex
+
+\begin{document}
+%\renewcommand*\listfigurename{Figures}
+
+\title{\textbf{MACHINE, FILE SYSTEM AND OPERATING SYSTEM SPECIFICATION}}
+\author{ALBIN SURESH \and RAMNATH J \and SUMESH B}
+\date{\today}
+
+\maketitle
+
+\tableofcontents
+\listoffigures
+
+\part{Machine Specification}
+\include{MachineIntroduction}
+\include{Registers}
+\include{Memory}
+\include{Process}
+\include{Instructions}
+\include{Interrupts}
+
+\part{File System Specification}
+\include{FileSystem}
+
+\part{Operating System Specification}
+\include{OS_Introduction}
+\include{OS_StartupCode}
+\include{HaltSystemCall}
+\include{FileSystemCalls}
+\include{Multiprogramming}
+\include{ProcessSystemCalls}
+
+\clearpage
+\addcontentsline{toc}{chapter}{Index}
+\printindex
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{Bibliography}
+\bibliographystyle{alpha}
+\bibliography{references}
+
+
+\end{document}
+%%%% Document ends %%%%%%
+
+% Draft v1.0 : K Dinesh
+% Draft v2.0 : Albin Suresh & Ramnath J

@@ -1,0 +1,109 @@
+\chapter{Instructions}
+\label{chp:instr}
+\index{Instructions}
+
+\section{Introduction}
+All instructions in the SIM architecture are present in the \ESIM architecture as well. The additional instructions provided by the \ESIM architecture can be classified into \emph{privileged} and \emph{unprivileged} instructions (Refer to the ~\href{http://www.athena.nitc.ac.in/~kmurali/Compiler/sim.html}{SIM manual} for the  instruction set and addressing modes). % TODO Give reference to appendix.
+
+\section{Processor Modes}
+\label{sec:modes}
+\index{Processor!Modes}
+The ESIM architecture is interrupt driven and uses a single processor. There are two modes of operation, the user mode and the kernel mode.
+\begin{itemize}
+	\item \textbf{User mode :} All unprivileged instructions can be executed in this mode. 
+	\item \textbf{Kernel mode :} Both privileged and unprivileged instructions can be executed in this mode. Initially, the machine starts in kernel mode.
+\end{itemize}
+
+The processor comes to know about the mode in which the system is running by looking at the value in the IP register.
+
+\section{Classification}
+\subsection{Unprivileged Instructions}
+\label{sec:unprvlgd}
+\index{Instructions!Unprivileged}
+All the instructions in the SIM architecture except the HALT instruction constitute the unprivileged instructions. In addition to that, we have five more instructions in the \ESIM architecture, one interrupt service instruction and four instructions for string operations. They are:
+\begin{enumerate}
+	\item \texttt{INT} \\ Syntax : INT \emph{no} \\
+	This instruction generates an interrupt to the kernel with \emph{no} as a parameter. It pushes the current IP+1 value into the stack and switches the machine from \textit{User mode} to \textit{Kernel mode}. The address of the first instruction of the specified ISR is stored into the IP register. Execution is started at the address specified IP. Refer section~\ref{interrupts} to know more about interrupts.
+	
+	\item \texttt{SIN Rn} - This instruction is used to take strings as input. The input string is stored in the data section of the program at the logical address specified by the value in Rn.
+	
+	\item \texttt{SOUT Rn} - This instruction prints the string stored at the logical address specified by the value in Rn. Figure~\ref{sout example} illustrates this instruction.
+
+	\begin{figure}[htp!]
+	\centering
+	\subfigure[Code Section]{
+	\renewcommand{\arraystretch}{1.2}
+	\scalebox{0.75}{
+	\begin{tabular}{|r|c|} \small
+	0 & \texttt{MOV R1 512} \\ \cline{2-2}
+	1 & \texttt{SOUT R1} \\ \cline{2-2}
+	2 & \texttt{MOV R1 513} \\ \cline{2-2}
+	3 & \texttt{SIN R1} \\ \cline{2-2}
+	4 & \texttt{SOUT R1} \\ \cline{2-2}
+	\vdots & \vdots \\ \cline{2-2}
+	255 & \ldots \\ \hline \hline
+	256 & \ldots \\ \cline{2-2}
+	\vdots & \vdots  \\ \cline{2-2}
+	511 & \ldots \\  \hline
+	\end{tabular}}} \\
+	\subfigure[Data Section: initial contents]{
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabular}{|r|c|} \small
+	512 & \texttt{HELLO$\backslash$0} \\ \cline{2-2}
+	513 & \ldots \\ \cline{2-2}
+	\vdots & \vdots \\ \cline{2-2}
+	767 & \ldots \\ \hline
+	\end{tabular}} \qquad
+	\subfigure[Data Section: after execution of \texttt{SIN} instruction]{
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabular}{|r|c|} \small
+	512 & \texttt{HELLO$\backslash$0} \\ \cline{2-2}
+	513 & \texttt{ESIM$\backslash$0} \\ \cline{2-2}
+	\vdots & \vdots \\ \cline{2-2}
+	767 & \ldots \\ \hline
+	\end{tabular}} \qquad \qquad
+	\subfigure[]{
+	\begin{tabular}{c}
+	\textbf{\underline{Output}} \\
+	\texttt{HELLO} \\
+	\texttt{512} \\
+	\texttt{ESIM}
+	\end{tabular}}
+	\caption{Example for \texttt{SOUT} instruction}
+	\label{sout example}
+	\end{figure}
+
+	\item \texttt{STRCPY Ri Rj} - This instruction copies the string stored in 
+	the data section at the logical address specified by the register Rj to 
+	the logical address specified by the register Ri.
+	\item \texttt{STRCMP Ri Rj} - This instruction compares the strings stored in 
+	the data section at the logical addresses specified by the registers Ri and Rj and returns a 
+	value 0 if the strings are equal and -1 otherwise. The returned value is stored in Ri.
+	\end{enumerate}
+	
+\subsection{Privileged Instructions}
+\label{sec:prvlgd}
+\index{Instructions!Privileged}
+There are \emph{four} privileged instructions. These instructions can be executed only in kernel mode. They are:
+\begin{itemize}
+	\item \texttt{IRET} \\
+	Syntax : IRET \\
+	IRET tells the processor that the interrupt handler has finished. This instruction pops the return address of the process from the stack into the IP register and switches the machine from kernel mode to user mode.
+	Refer section ~\ref{interrupts} to know more about the IRET instruction.
+	
+	\item \texttt{LOAD} \index{Load/Store} \footnote{These are macros which initialise the DMA controller with the arguments passed and invoke it for the actual transfer to take place.}
+	\\ Syntax : LOAD \emph{pg\_no} \emph{block\_no} \\
+	This instruction loads the block specified by the  \emph{block\_no}, from the disk, to the page specified by the  \emph{pg\_no}, in the memory.
+	
+	\item \texttt{STORE$^{1}$} \index{Load/Store} \\
+	Syntax : STORE \emph{block\_no} \emph{pg\_no} \\ 
+	This instruction stores the page specified by the \emph{pg\_no}, from the memory, to the block specified by the \emph{block\_no}, in the disk.
+	
+	\item \texttt{HALT} \\
+	Syntax : HALT \\
+	This instruction causes the simulator to halt immediately.
+\end{itemize}
+
+	%TODO Add details on how modes are detected 
+	%Refer chapter~\ref{chp:memory} for more details.
+	% TODO Give references to appropriate sections. Why to give refs here? Also do clean up by moving infos to restriction section.

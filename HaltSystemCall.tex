@@ -1,0 +1,17 @@
+\chapter{Halt System Call}
+\label{chp:halt_system_calls}
+\index{Halt System Call}
+
+\section{System Calls}
+System calls are interfaces through which a process communicates with the OS. Each system call has a unique name associated with it (Halt, Open, Read, Fork etc). Each of these names maps to a unique system call number. Each system call has an interrupt associated with it. Note that multiple system calls can map to the same interrupt.
+
+All the arguments to the system call are pushed as arguments into the user stack while calling the corresponding interrupt. The system call number is pushed as the last argument (Refer section~\ref{callconv} for calling convention).
+
+\section{Halt System Call}
+\label{haltsyscall}
+\index{File System Calls!Halt}
+
+Syntax : \texttt{Halt()} \\
+Syscall no : \counter{syscall} \\
+
+The Halt system call is used to halt the machine. Halt system call invokes the interrupt INT 5. This interrupt consists of a single instruction, the HALT instruction, which halts the simulator.

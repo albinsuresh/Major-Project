@@ -1,0 +1,40 @@
+\chapter{Registers}
+\index{Registers}
+\label{chp:registers}
+
+\section{Introduction}
+The \ESIM architecture maintains \textbf{12} registers each of size 1 word.
+\index{Memory!Word}
+\begin{defn}
+	\textbf{Word :} It is the  basic unit of memory. 
+\end{defn}
+Each register can hold either an integer or an address of a string.
+
+\section{Register Set}
+\index{Memory!Register Set}
+There are 8 \emph{General Purpose Registers}, R0--R7, which the user programs can use directly. These are followed by another 8 \emph{Kernel Registers}, S0--S7 which are used only by the kernel. There are an additional 4 \emph{Temporary Registers}, T0--T3 which are used by the compiler.\footnote{It is recommended that the programmer, system or otherwise, not use these temporary registers.} There are also 4 additional special purpose registers BP, IP, SP and PID which are used as Base pointer, Instruction pointer, Stack pointer and Process Identifier respectively.
+Figure~\ref{tbl:registers} summarises the various registers and the sections where they are referred. 
+\begin{figure}[h!]
+	\centering
+	\begin{tabular}{|c|c|m{5cm}|}
+		\toprule
+		\textbf{Name} & \textbf{Register} & \textbf{Section} \\
+		\toprule
+		General Purpose Registers & R0--R7 & Used by the user programs to store data during various operations (Refer section~\ref{sec:unprvlgd} for the operations supported). \\
+		\hline
+		Kernel Registers & S0--S7  & Used by the OS to store data during various operations.(Refer section~\ref{sec:prvlgd} for the operations supported). \\
+		\hline
+		Temporary Registers & T0--T3 & Used by the translator for storing intermediate data. \\
+		\hline
+		Stack Pointer & SP & Section~\ref{register details} \\ 
+		\hline
+		Base Pointer & BP & Section~\ref{register details} \\ 
+		\hline
+		Instruction Pointer & IP & Section~\ref{register details} \\ 
+		\hline
+		Process Identifier & PID & Section~\ref{register details} \\
+		\bottomrule
+	\end{tabular}
+	\caption{Summary of the registers in \ESIM architecture}
+	\label{tbl:registers}
+\end{figure}
