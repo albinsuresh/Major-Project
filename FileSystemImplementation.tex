@@ -1,0 +1,72 @@
+\chapter{File System Implementation}
+\label{chp:fileSysImpl}
+
+\section{File System}
+The implementation details for the file system are given below. details given include the header file, the corresponding code file, the various functions included in them and a short description of these functions.
+\begin{enumerate}
+	\item \textit{createDisk.h} and \textit{createDisk.c} 
+
+	This file consists of the following functions.
+	\begin{itemize}
+		\item void createDisk(int) : Creates a disk file if it does not exist. If it does the function also has the option of formatting the disk.
+	\end{itemize}
+	
+	\item \textit{fileSystem.h} and \textit{fileSystem.c}
+	
+	The header file consists of all the constants that have been defined for implementing the filesystem. This file consists of the following functions.
+	\begin{itemize}
+		\item void listAllFiles() - Lists all files in the FileSystem.
+		
+		\item int deleteExecutableFromDisk(char*) - Deletes anexecutable file from the filesystem
+		
+		\item int removeFatEntry(int) - Removes the fat entry for a file.
+		
+		\item int getDataBlocks(int*, int) - Retrieves the datablocks for a file which already exists on the filesystem.
+		
+		\item int loadExecutableToDisk(char*) - Loads executable file t disk.
+		
+		\item int CheckRepeatedName(char*) - Checks whether a file already exists on the filesystem. If it does it returns the fat entry for that file.
+		\item int FindFreeBlock() - Allocates and returns an empty block in the filesystem.
+		
+		\item int FindEmptyFatEntry() - Searches and returns an empty fat entry in the filesystem.
+		\item void FreeUnusedBlock(int*, int) - Frees the blocks which are allocated on the disk. These are passed as the first arguement.
+		
+		\item void AddEntryToMemFat(int, char*, int, int) - Popuates the various fields of FAT on the disk.
+		\item int writeFileToDisk(FILE*, int) - Commits the changes made to the memory copy of the file to the underlying filesystem.
+		
+		\item int loadOSCode(char*) - loads the Startup code onto the filesystem.
+		
+		\item int loadIntCode(char*, int) - loads the interrupt code code to the proper place on the filesystem depending on the arguement..
+		
+		\item int initializeInit() - Makes a dummy entry for init on the filesystem.
+		
+		\item int loadInitCode(char*) - loads init code onto the filesystem.
+	\end{itemize}
+	
+	\item \textit{fileUtility.h} and \textit{fileUtility.c}
+	
+	This file consists of the following functions:
+	\begin{itemize}
+		\item emptyBlock(int) - Empties the memory copy of the disk
+		
+		\item int getInteger(char*) - Converts the arguement from char* to int and returns the int version.
+		
+		\item void storeInteger(char*, int) - Converts the second arguement to integer and stores it in the location specified by the first arguement. 
+		
+		\item int readFromDisk(int, int) - Reads an entire page from the block number specified by the second arguement to the memory location  specified by the first arguement.
+		
+		\item int writeToDisk(int, int) - Writes an entire page to the block number specified by the second arguement from the memory location specified by the first arguement.
+		
+		\item int loadFileToVirtualDisk() - Creates a memory copy of the disk.
+		
+		\item void clearVirtDisk() - Clears the entire memory copy of the disk.
+	\end{itemize}
+	
+	\item \textit{interface.h} and \textit{interface.c}
+	
+	This file consists of the following functions:
+	\begin{itemize}
+		\item void menu() - Displays the menu available for the filesystem.
+		\item int main() - Displays the menu and does the various functions as the user requires.	
+	\end{itemize}
+\end{enumerate}

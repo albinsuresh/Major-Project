@@ -1,0 +1,67 @@
+\chapter{Machine Implementation}
+\label{chp:machImplmnt}
+
+\section{Machine}
+The implementation details for the machine are given below. details given include the header file, the corresponding code file, the various functions included in them and a short description of these functions.
+
+\begin{enumerate}
+	\item \textit{data.h }
+	
+	Consists of constants declared for the machine. These include the registers, and the size of various constiuents of memory. The entire memory is declared here as well.
+	
+	\item \textit{memoryConstants.h}
+	
+	Declarations for the structure of main memory is made here.
+	
+	\item \textit{instr.h}
+	
+	Declares the constants associated with each token.
+	
+	\item \textit{decode.lex}
+	
+	This is the lexical analyser which analyses each instruction and reurns the corresponding token.
+	
+	\item \textit{boot.h} and \textit{boot.c}
+	
+	This file consists of the following functions:
+	\begin{itemize}
+		\item void loadStartupCode() - Loads the OS Startup Code from disk to the proper location in memory
+		\item void initializeRegs() - Initializes the values of all the registers to zero.
+	\end{itemize}
+	
+	\item \textit{scheduler.h} and \textit{scheduler.c}
+	
+	This file consists of the following functions:
+	\begin{itemize}
+		\item void runInt0Code() - Causes the timer interupt leading to the control being passed on to the INT 0 code in memory.
+	\end{itemize}
+
+	\item \textit{timer.h}
+	
+	This file contains the constant defining the number of clock cycles that makes up a timslice alloted to a single process. This file also consists of the following functions:
+	\begin{itemize}
+		\item int isTimeZero() - Checks whether the timer counter reads zero.
+		\item void tick() - Decrements the timer counter.
+		\item void resetTimer() - Resets the timer counter.
+	\end{itemize}
+	
+	\item \textit{utility.h} and \textit{utility.c}
+	
+	This file consists of the following functions:
+	\begin{itemize}
+		\item void emptyPage(int) - Clears the page speecified by the aguement.
+		\item struct address translate(int) - Translates the virtual address passed as arguement to the corresponding page number and offset.
+		\item printRegisters() - Prints the values of all the registers. Used for debugging purposes.
+		\item void exception(char*) - Acts as the exception handler. Prints the instruction that caused the exception and terminates execution.
+	\end{itemize}
+
+	\item \textit{simulator.h} and \textit{simulator.c}
+
+	This file consists of the following functions:
+	\begin{itemize}
+		\item void Executeoneinstr(int) - This function simulates all the instructions available on the esim architecture. 
+		\item void run(int, int) - This function acts as the bootloader. It loads the Startup code. It also calls Executeoneinstr() for every instruction that it reads.
+		\item int main(int, char**) - Makes the initial changes to the machine environment and the calls run().
+	\end{itemize}
+
+\end{enumerate}

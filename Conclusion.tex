@@ -1,0 +1,13 @@
+\chapter{Conclusion}
+\label{chp:conclusion}
+\index{Conclusion}
+
+The entire project was started as a way for increasing the knowledge gained by a student taking Operating System lab. The current lab utilizes NACHOS~\cite{nachos} and students gain little knowledge from it. Moreover the clerical overhead involved in implementing an Operating System on NACHOS is way more than the knowledge gained from it.
+
+The current project was done taking in mind the difficulties that were faced while using NACHOS. It was designed in a way so as to minimize the clerical overhead and give the student a feel of how an Operating System functions. How successful we have been, only time can tell. However from our experience we feel that this new project is above NACHOS in terms of conceptual knowledge gained and ease of use.
+
+There have been some decisions which deviate from how an Operating System works. This includes fixing the location of INIT process and Exec not checking whether the new file to load is an executable or not. These problems arose because the Kernel codes do not have a stack. One solution was to do what we did and another one was to add a kernel stack. The latter would have involved changes in design and so we did not choose it. We expect this to be solved in the next version of the project where the entire machine would have only string data type.
+
+Writing an Operating System is not so tedious on this machine  as it was in NACHOS. We had to write an Operating System for testing and debugging. From that experience, we can clearly say that the student in fact learns not only a lot about Operating System but also many new other concepts. One such concept is the use of memory de-referencing.
+
+On an overall note, the project has ended on a high. Though it has its faults, it is better than the tool currently being utilized. The next version, if it goes as planned, will take it a level higher. Nevertheless we feel that what we have done is ready to be put forth before the student community to aide them in learning Operating Systems.

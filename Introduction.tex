@@ -1,0 +1,50 @@
+\chapter{Introduction}
+
+\section{Background}
+\label{background}
+A preliminary proposal for an elementary operating system was made in \cite{group1,group2}.
+Our work involved the critical analysis of the machine specification, Operating System specification and the implemented code.
+
+\section{Motivation}
+\label{motivation}
+The experimental operating system, NACHOS~\cite{nachos}, which is currently used by the students for Operating Systems laboratory has several drawbacks.
+
+The main drawback of NACHOS is the fact that the operating system kernel is not running on the simulated machine's memory. The operating system runs outside the simulated machine which is conceptually wrong.
+Another drawback is the fact that the conceptual knowledge gained by a student working on NACHOS is not proportional to the manual work that a student has to put into it.
+So it was decided to design a simple architecture without any such drawbacks and provide a better and simpler interface to write the operating system using this architecture.
+
+\section{Structure of the project}
+This project was initiated with the aim of creating a one-semester course in operating system that covers the basics of operating system and gives a hands-on experience in writing a simple operating system.	The machine corresponding to this architecture can be simulated by a simulator and the operating system, written by the student, will be running on the simulator. 
+%We present a three level overall picture as follows.
+
+This project in its entirety can be described as consisiting of five main stages.
+\begin{enumerate}
+	\item The first stage consisted of designing a detailed specification for the machine as well as the Operating System. The machine was chosen as the extended version of SIM and was called \ESIM. String data type and operations were added to SIM machine to convert it into \ESIM. A detailed specification of the operating system to be implemented was also developed. This was done by~\cite{group1} and~\cite{group2}. These specifications were critically reviewed and modifications were done. Refer chapter \ref{chp:intro} and chapter \ref{chp:osintro} for more details.
+	
+	\item The second stage consisted of implementing the machine and file system. Implementation details for machine and file system are given in chapters \ref{chp:machImplmnt} and \ref{chp:fileSysImpl}. This was one of our primary tasks.
+	
+	\item The third stage consisted of designing two compilers APSIL and SPSIL. This was done in~\cite{spsil} and~\cite{apsil}. SPSIL is the compiler which will be used by the students to write the Operating System code. APSIL is the compiler which will be used by the students to write programs to test the Operating System they have written. Complete documentation of SPSIL and APSIL are included in the appendix.
+	
+	\item The fourth stage consisted debugging the machine, file system and the two compilers. This was primarily done by writing the Operating System code and checking for bugs.
+	
+	\item The final stage consisted of integrating all these documentations and creating an environment where students can consult while doing the lab.
+\end{enumerate}
+%\begin{figure}
+
+%{\centering
+%\begin{tabular}{|c|}
+%\hline
+%User Programs (\textsc{level 3}) \\ \hline
+%Operating System (\textsc{level 2}) \\ \hline
+%Simulator (\textsc{level 1}) \\ \hline
+%\end{tabular}
+%\caption{System Design}
+%\end{figure}
+%
+%\begin{itemize}
+%\item Level 1 refers to the simulator which simulates various instructions of the machine and also maps I/O requests to the
+%	corresponding linux system calls.
+%\item Level 2 refers to the operating system, written by the student, on the simulated architecture.
+%\item Level 3 refers to the user programs running on the operating system. 
+%\end{itemize}
+%}
