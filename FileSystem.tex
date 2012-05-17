@@ -16,10 +16,10 @@ The basic structure of the disk is shown in figure~\ref{fig:disk}.
 
 \begin{figure}[htp!] \small
 	\centering
-	\begin{tabular}{|c||c|c|c|c|c|c|c|c|}
+	\begin{tabular}{|c||c|c|c|c|c|c|c|c|c|}
 		\hline
-		\textbf{Block No.} & 0 & 1 & 2 & \ldots & 8 & 9--10 & 11--12 & 13--511 \\ \hline
-		\textbf{Contents} & OS Startup code & INT 0 & INT 1 & \ldots & INT 7 & Free List & FAT & Data Blocks \\ \hline
+		\textbf{Block No.} & 0 & 1 & 2 & \ldots & 8 & 9--10 & 11--12 & 13--16 & 17--511 \\ \hline
+		\textbf{Contents} & OS Startup code & INT 0 & INT 1 & \ldots & INT 7 & Free List & FAT & INIT & Data Blocks \\ \hline
 	\end{tabular}
 	\caption{Structure of the disk}
 	\label{fig:disk}

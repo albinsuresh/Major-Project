@@ -25,14 +25,20 @@
 			\multirow{2}{*}{3}
 				& \hyperref[lbl:proctbl]{Process Table} & 768 -- 959 \\ \cline{2-3}
 				& Unallocated & 960 -- 1023 \\ \hline 
-			4 & \multirow{2}{*}{\hyperref[lbl:fat]{File Allocation Table}} & \multirow{2}{*}{1024 -- 1535} \\ \cline{1-1} 
+			4 & \multirow{2}{*}
+				{\hyperref[lbl:fat]{File Allocation Table}} & \multirow{2}{*}{1024 -- 1535} \\ \cline{1-1} 
 			5 & 				 &  \\ \hline 
-			6 & \multirow{2}{*}{\hyperref[lbl:disklst]{Disk Free List}} & \multirow{2}{*}{1536 -- 2047}\\ \cline{1-1} 
+			6 & \multirow{2}{*}
+				{\hyperref[lbl:disklst]{Disk Free List}} & \multirow{2}{*}{1536 -- 2047}\\ \cline{1-1} 
 			7 & 				& \\ \hline 
-			\multirow{3}{*}{8 -- 55}
-				&  \vdots & \vdots \\   
-				&  User Programs & 2048 -- 14335 \\  
-				& \vdots & \vdots \\ \hline 
+			8 & \multirow{3}{*}
+				{\hyperref[lbl:INITprocess]{INIT process}} & \multirow{3}{*}{2048 -- 2815} \\ \cline{1-1} 
+			9 & 				 &  \\ \cline{1-1} 
+			10 & 				 &  \\ \hline 
+			\multirow{3}{*}{11 -- 55}
+				&  \vdots & \\   
+				&  User Programs & 2816 -- 14335 \\  
+				& \vdots & \\ \hline 
 			56 & \hyperref[lbl:int]{INT 0} & 14336 -- 14591 \\ \hline 
 			57 & \hyperref[lbl:int]{INT 1} & 14592 -- 14848 \\ \hline 
 			\vdots & \vdots & \vdots \\ \hline 

@@ -23,15 +23,22 @@
 \begin{document}
 %\renewcommand*\listfigurename{Figures}
 
-\title{\textbf{MACHINE, FILE SYSTEM AND OPERATING SYSTEM SPECIFICATION}}
-\author{ALBIN SURESH \and RAMNATH J \and SUMESH B}
-\date{\today}
+%\title{\textbf{MACHINE, FILE SYSTEM AND OPERATING SYSTEM SPECIFICATION}}
+%\author{ALBIN SURESH \and RAMNATH J \and SUMESH B}
+%\date{\today}
+%
+%\maketitle
 
-\maketitle
+\include{coverPage}
+\include{acknowledgement}
+\include{declaration}
+\include{certificate}
+\include{abstract}
 
 \tableofcontents
 \listoffigures
 
+\include{Introduction}
 \part{Machine Specification}
 \include{MachineIntroduction}
 \include{Registers}
@@ -40,8 +47,14 @@
 \include{Instructions}
 \include{Interrupts}
 
+\part{Machine Implementation}
+\include{MachineImplementation}
+
 \part{File System Specification}
 \include{FileSystem}
+
+\part{File System Implementation}
+\include{FileSystemImplementation}
 
 \part{Operating System Specification}
 \include{OS_Introduction}
@@ -50,6 +63,13 @@
 \include{FileSystemCalls}
 \include{Multiprogramming}
 \include{ProcessSystemCalls}
+
+\include{FutureWork}
+\include{Conclusion}
+
+\appendix
+\include{SPSIL}
+\include{APSIL}
 
 \clearpage
 \addcontentsline{toc}{chapter}{Index}

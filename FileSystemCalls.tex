@@ -27,6 +27,7 @@ Before explaining the system calls, we introduce two data structures : \textit{G
 
 	 \begin{itemize}
 		 \item \textbf{FAT index entry :} \index{File Allocation Table!Memory copy} It is used to index the memory copy of the file allocation table(section~\ref{sec:fat}) to get information about that particular file.
+
 		 \item \textbf{lseek :} It is used to get the current position of the next character that will be read from the file. By default, when a file is opened, this parameter has a value 0.
 	 \end{itemize}
 
@@ -50,7 +51,7 @@ Before explaining the system calls, we introduce two data structures : \textit{G
 \noindent Interrupt specifications for different \textit{File system calls} are as follows:
 
 \subsection{INT 1}
-The file system calls \textit{Create}, \textit{Open}, \textit{Close} and \textit{Delete} invoke INT 1. INT 1 handles these system calls as follows.
+The file system calls \textit{Create} and \textit{Delete} invoke INT 1. INT 1 handles these system calls as follows.
 \begin{enumerate}
 	\item  \textbf{Create :} This system call is used to create a new file in the file system whose name is specified in the argument.\\
 	Syntax : \texttt{int Create(fileName)} \\
@@ -73,6 +74,34 @@ The file system calls \textit{Create}, \textit{Open}, \textit{Close} and \textit
 		\item The return value of this system call is 0 in case of success and the appropriate error code in case of failure.
 	\end{itemize}
 
+	\item \textbf{Delete :} This system call is used to delete the file from the file system whose name is specified in the argument. \\
+	Syntax : \texttt{int Delete(fileName)} \\
+	Syscall no : \counter{syscall}
+	\index{File System Calls!Delete}
+	\begin{itemize}
+		\item The memory copy of the FAT \index{File Allocation Table!Memory copy} is searched using the \texttt{fileName} to get the corresponding FAT entry. If no entry is found, an appropriate error code is returned.
+		
+		\item If the file is already open an appropriate error code is returned. We adopt the following steps to check if the file is open.
+		\begin{itemize}
+			\item The \emph{FAT index entry} of each global file table entry is used to fetch the filename of the corresponding open file from the memory copy of the FAT \index{File Allocation Table!Memory copy}.
+			
+			\item Each of the filenames obtained in the previous step is compared with the \texttt{fileName}. If match is found, we conclude that the file is currently in open.
+		\end{itemize}
+		\item The \emph{basic block number} field in this FAT entry obtained, is then used to load the basic block of the file into the scratchpad.
+		
+		\item Each entry in the block list of the basic block is used to find the data blocks of the file. Then, entries in the memory copy of the disk free list \index{Disk Free List!Memory copy}  corresponding to these data blocks are set to zero, thereby freeing them.
+		
+		\item Finally, the FAT entry of the file is removed.
+		
+		\item The updated copies of FAT \index{File Allocation Table!Memory copy} and disk free list \index{Disk Free List!Memory copy} in the memory are committed to the disk.
+		
+		\item The return value of this system call is 0 in case of success and the appropriate error code in case of failure.
+	\end{itemize}
+\end{enumerate}
+
+\subsection{INT 2}
+The file system calls \textit{Open} and \textit{Close} invoke INT 2. INT 2 handles these system calls as follows.
+\begin{enumerate}
 	\item \textbf{Open :} This system call is used to open an existing file whose name is specified in the argument.\\
 	Syntax : \texttt{int Open(fileName)} \\
 	Syscall no : \counter{syscall} 
@@ -105,65 +134,11 @@ The file system calls \textit{Create}, \textit{Open}, \textit{Close} and \textit
 		
 		\item The return value of this system call is 0 in case of success and the appropriate error code in case of failure.
 	\end{itemize}
-
-	\item \textbf{Delete :} This system call is used to delete the file from the file system whose name is specified in the argument. \\
-	Syntax : \texttt{int Delete(fileName)} \\
-	Syscall no : \counter{syscall}
-	\index{File System Calls!Delete}
-	\begin{itemize}
-		\item The memory copy of the FAT \index{File Allocation Table!Memory copy} is searched using the \texttt{fileName} to get the corresponding FAT entry. If no entry is found, an appropriate error code is returned.
-		
-		\item If the file is already open an appropriate error code is returned. We adopt the following steps to check if the file is open.
-		\begin{itemize}
-			\item The \emph{FAT index entry} of each global file table entry is used to fetch the filename of the corresponding open file from the memory copy of the FAT \index{File Allocation Table!Memory copy}.
-			
-			\item Each of the filenames obtained in the previous step is compared with the \texttt{fileName}. If match is found, we conclude that the file is currently in open.
-		\end{itemize}
-		\item The \emph{basic block number} field in this FAT entry obtained, is then used to load the basic block of the file into the scratchpad.
-		
-		\item Each entry in the block list of the basic block is used to find the data blocks of the file. Then, entries in the memory copy of the disk free list \index{Disk Free List!Memory copy}  corresponding to these data blocks are set to zero, thereby freeing them.
-		
-		\item Finally, the FAT entry of the file is removed.
-		
-		\item The updated copies of FAT \index{File Allocation Table!Memory copy} and disk free list \index{Disk Free List!Memory copy} in the memory are committed to the disk.
-		
-		\item The return value of this system call is 0 in case of success and the appropriate error code in case of failure.
-	\end{itemize}
 \end{enumerate}
 
-\subsection{INT 2}
-The file system calls \textit{Read}, \textit{Write} and \textit{Seek} invoke INT 2. INT 2 handles these system calls as follows.
+\subsection{INT 3}
+The file system calls \textit{Read} and \textit{Seek} invoke INT 3. INT 3 handles these system calls as follows.
 \begin{enumerate}
-	\item \textbf{Write :} This system call is used to write data into an open file. \\
-	Syntax : \texttt{int Write(fileDescriptor, mem\_loc, numWords)} 
-	\footnote{It is advisable to have  a maximum of 1 block 
-	for any data file if it has to be modified using \texttt{write} system call since if the modification spans 
-	multiple blocks the entire procedure to access a block (outlined above) has to be repeated.} \\ 
-	Syscall no : \counter{syscall}
-	\index{File System Calls!Write}
-	\begin{itemize}
-		\item First of all, the basic block of the file specified by the \texttt{fileDescriptor} is loaded into the scratchpad. This is done in the following way:
-		\begin{itemize}
-			\item The \texttt{fileDescriptor} is used first to access the local file table entry of the file. An appropriate error is returned if the \texttt{fileDescriptor} is out of the range specified.
-			\item This local file table entry is then used to access the global file table entry of the file.
-			\item Then the FAT index field in the global file table entry is used to access the FAT entry of the file.
-			\item The basic block address present in the FAT entry is then used load the basic block (containing block list and file header info) into the scratchpad. Refer figure~\ref{access_scheme}.
-		\end{itemize}	
-		\item The lseek position present in the GFT entry and \texttt{numWords} are used to index the block list in the basic block to find the block numbers of the block(s) to be written into. \footnote{The data block to which the lseek position is pointing to is got by dividing lseek by the block size. \\
-		The data block number calculated above is used to index the block list in the basic block to get the exact location of the data block in the disk. The data block is then loaded from the disk into the scratchpad. \\
-		If the words to be read are split across multiple data blocks, the above procedure is repeated.}
-		\item Each time the block to be written into is loaded into the scratchpad before performing the write operation.
-		\item After loading the specified block, the content to be written is copied from the user memory location (\texttt{mem\_loc}) into this block. If \texttt{mem\_loc} is out of the address space of the process, an appropriate error code is returned.
-		\item If the write operation exhausts all the currently allocated blocks, new blocks are allocated as required. This is done in the following way.
-		\begin{itemize}
-			\item The memory copy of the disk free list \index{Disk Free List!Memory copy} is used to get the block number of a free block.
-			\item A new basic block entry is created using this free block number and added to the block list of the basic block. Successive write operations are then performed the usual way.
-		 \end{itemize}
-		\item Once all the write operations are over for that block, it is stored back into the disk.
-		\item The updated copies of FAT \index{File Allocation Table!Memory copy} and disk free list \index{Disk Free List!Memory copy} in the memory are committed to the disk.
-		\item The return value of this system call is the number of words successfully written. In case of an error, an appropriate error code is returned.
-		\end{itemize}
-	
 	\item \textbf{Seek :} This system call is used to change the current value of the seek position in the global file table entry of a file. \\
 	Syntax : \texttt{int Seek(fileDescriptor, lseek)}  \\
 	Syscall no : \counter{syscall}
@@ -194,11 +169,50 @@ The file system calls \textit{Read}, \textit{Write} and \textit{Seek} invoke INT
 		\item The contents read are then copied into the buffer that is specified as an argument to the system call (\texttt{mem\_loc}). If the \texttt{mem\_loc} is out of the address space of the process, an appropriate error code is returned.
 		\item The return value of this system call is the number of words successfully read. In case of an error, an appropriate error code is returned.
 	\end{itemize}
-
-	\begin{figure}[htp!]
-		\centering
-		\includegraphics[scale=0.65]{pics/access_method}
-		\caption{Diagram showing the method of accessing FAT entry}
-		\label{access_scheme}
-	\end{figure}
 \end{enumerate}
+
+\begin{figure}[htp!]
+	\centering
+	\includegraphics[scale=0.65]{pics/access_method}
+	\caption{Diagram showing the method of accessing FAT entry}
+	\label{access_scheme}
+\end{figure}
+
+\subsection{INT 4}
+The file system call \textit{Write} invoke INT 4. INT 4 handles these system calls as follows.
+
+\textbf{Write :} This system call is used to write data into an open file. \\
+Syntax : \texttt{int Write(fileDescriptor, mem\_loc, numWords)} 
+\footnote{It is advisable to have  a maximum of 1 block for any data file if it has to be modified using \texttt{write} system call since if the modification spans multiple blocks the entire procedure to access a block (outlined above) has to be repeated.} \\
+Syscall no : \counter{syscall}
+\index{File System Calls!Write}
+\begin{itemize}
+	\item First of all, the basic block of the file specified by the \texttt{fileDescriptor} is loaded into the scratchpad. This is done in the following way:
+	\begin{itemize}
+		\item The \texttt{fileDescriptor} is used first to access the local file table entry of the file. An appropriate error is returned if the \texttt{fileDescriptor} is out of the range specified.
+		\item This local file table entry is then used to access the global file table entry of the file.
+		\item Then the FAT index field in the global file table entry is used to access the FAT entry of the file.
+		\item The basic block address present in the FAT entry is then used load the basic block (containing block list and file header info) into the scratchpad. Refer figure~\ref{access_scheme}.
+	\end{itemize}	
+	
+	\item The lseek position present in the GFT entry and \texttt{numWords} are used to index the block list in the basic block to find the block numbers of the block(s) to be written into. \footnote{The data block to which the lseek position is pointing to is got by dividing lseek by the block size. \\
+	The data block number calculated above is used to index the block list in the basic block to get the exact location of the data block in the disk. The data block is then loaded from the disk into the scratchpad. \\
+	If the words to be read are split across multiple data blocks, the above procedure is repeated.}
+	
+	\item Each time the block to be written into is loaded into the scratchpad before performing the write operation.
+	
+	\item After loading the specified block, the content to be written is copied from the user memory location (\texttt{mem\_loc}) into this block. If \texttt{mem\_loc} is out of the address space of the process, an appropriate error code is returned.
+	
+	\item If the write operation exhausts all the currently allocated blocks, new blocks are allocated as required. This is done in the following way.
+	\begin{itemize}
+		\item The memory copy of the disk free list \index{Disk Free List!Memory copy} is used to get the block number of a free block.
+		\item A new basic block entry is created using this free block number and added to the block list of the basic block. Successive write operations are then performed the usual way.
+	\end{itemize}
+	
+	\item Once all the write operations are over for that block, it is stored back into the disk.
+	
+	\item The updated copies of FAT \index{File Allocation Table!Memory copy} and disk free list 
+	\index{Disk Free List!Memory copy} in the memory are committed to the disk.
+	
+	\item The return value of this system call is the number of words successfully written. In case of an error, an appropriate error code is returned.
+\end{itemize}
