@@ -1,6 +1,11 @@
 \chapter{OS Startup}
 \label{chp:osstartup}
 
+\section{ROM Code}
+\label{lbl:romcode}
+It is a hard coded assembly level code present in page 0 of the memory. Refer figure~\ref{fig:main memory}.
+It is also known as the ROM (Read Only Memory) code since in an actual machine it is burnt in the hardware. When the machine boots up, this code is executed. This code has the basic functionality of loading block 0 of the disk (containing the OS startup code) into page 1 of the memory and to set the IP register value to 256 and start execution.
+
 \section{OS Startup Code Specification}
 \index{OS Startup Code}
 \label{lbl:oscode}
