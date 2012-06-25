@@ -1,17 +1,17 @@
 \chapter{Introduction}
 \label{chp:osintro}
-The OS provides an interface to the user to interact with the hardware. Users write programs that make use of various resources like disk, memory, processor etc. These programs are run as processes on the machine.
-
-The system programmers use the language SP-SIL for writing the Operating System. User programs to test the various functionalities of the Operating System can be written in AP-SIL. Refer the documents ~\cite{spsil} and ~\cite{apsil} for the complete documentation of these tools.
-
-A detailed operating system specification was done in the works of ~\cite{group1} and ~\cite{group2}. This documentation was critically reviewed and modifications were done in many places to comply with our new design.
-The major modifications done are the following:
-\begin{itemize}
-\item Introduction of INIT process (refer section \ref{lbl:INITprocess})
-\item Introduction of Halt() system call (refer chapter \ref{chp:halt_system_calls})
-\item Exception handler interrupt has been excluded due to some limitations in the design.
-\item The distribution of system calls were changed. This was due to the limitations in interrupt code size.
-\end{itemize}
+%The OS provides an interface to the user to interact with the hardware. Users write programs that make use of various resources like disk, memory, processor etc. These programs are run as processes on the machine.
+%
+%The system programmers use the language SP-SIL for writing the Operating System. User programs to test the various functionalities of the Operating System can be written in AP-SIL. Refer the documents ~\cite{spsil} and ~\cite{apsil} for the complete documentation of these tools.
+%
+%A detailed operating system specification was done in the works of ~\cite{group1} and ~\cite{group2}. This documentation was critically reviewed and modifications were done in many places to comply with our new design.
+%The major modifications done are the following:
+%\begin{itemize}
+%\item Introduction of INIT process (refer section \ref{lbl:INITprocess})
+%\item Introduction of Halt() system call (refer chapter \ref{chp:halt_system_calls})
+%\item Exception handler interrupt has been excluded due to some limitations in the design.
+%\item The distribution of system calls were changed. This was due to the limitations in interrupt code size.
+%\end{itemize}
 
 \section{Operating System Functionality}
 There are various functionalities associated with the operating system which are essential for the user programs to run and make use of the system resources. The functionalities and their details are explained below.
